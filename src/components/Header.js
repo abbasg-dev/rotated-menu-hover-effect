@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
+
+import { gsap } from "gsap";
 
 const StyledHeader = styled.header`
   position: absolute;
@@ -33,7 +35,32 @@ const StyledHeader = styled.header`
   }
 `;
 
-const Header = () => {
+const Header = ({ isMenuOpen, setIsMenuOpen }) => {
+  const topRef = useRef();
+  const bottomRef = useRef();
+
+  //store the timeline in a ref
+  const hamburgerTl = useRef();
+
+  useEffect(() => {
+    hamburgerTl.current = gsap
+      .timeline({
+        defaults: {
+          duration: 0.3,
+          ease: "power2.out",
+        },
+      })
+      .fromTo(topRef.current, { y: 0 }, { y: 4.5 })
+      .fromTo(bottomRef.current, { y: 0 }, { y: -4.5 }, 0)
+      .fromTo(topRef.current, { rotation: 0 }, { rotation: 135 }, 0)
+      .fromTo(bottomRef.current, { rotation: 0 }, { rotation: 45 }, 0);
+  }, []);
+
+  useEffect(() => {
+    // toggle the direction of our timeline
+    hamburgerTl.current.reversed(!isMenuOpen);
+  }, [isMenuOpen]);
+
   return (
     <StyledHeader>
       <div className="header__outer">
@@ -59,9 +86,12 @@ const Header = () => {
                 13.2909Z"
             ></path>
           </svg>
-          <div className="header__hamburger">
-            <span></span>
-            <span></span>
+          <div
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="header__hamburger"
+          >
+            <span ref={topRef}></span>
+            <span ref={bottomRef}></span>
           </div>
         </div>
       </div>
