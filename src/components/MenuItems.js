@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import styled from "styled-components";
+import { gsap } from "gsap";
 
 const StyledProjectItem = styled.a`
   position: relative;
@@ -43,6 +44,23 @@ const StyledProjectItem = styled.a`
 `;
 
 const MenuItems = ({ name, bgcolor, src }) => {
+  useLayoutEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    const getAllProjectsItems = gsap.utils.toArray(".project__item");
+    gsap.set(getAllProjectsItems, { opacity: 0, y: 200 });
+
+    gsap.to(getAllProjectsItems, {
+      opacity: 1,
+      stagger: 0.1,
+      y: 0,
+    });
+
+    return () => {
+      document.body.style.overflow = "visible";
+    };
+  }, []);
+
   return (
     <StyledProjectItem
       href=""
