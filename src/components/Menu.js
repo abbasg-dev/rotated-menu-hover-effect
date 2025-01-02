@@ -24,6 +24,7 @@ const StyledProjectsContainer = styled.nav`
     left: 50%;
     overflow: hidden;
     background-color: #000;
+    visibility: hidden;
     top: 20vh;
     z-index: 1;
     border-radius: 300px;
@@ -31,7 +32,6 @@ const StyledProjectsContainer = styled.nav`
       position: absolute;
       opacity: 0.8;
       top: -10%;
-      left: 0;
       width: 100%;
       height: 115%;
       background-size: cover;
