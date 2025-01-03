@@ -18,7 +18,6 @@ body {
 }
 html, body {
   cursor: none;
-  background-color: #e1dfdd;
 }
 * {
   min-height: 0;
