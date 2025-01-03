@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 import { gsap } from "gsap";
 
@@ -23,27 +23,27 @@ const StyledProjectItem = styled.a`
     @media screen and (min-width: 53em) {
       font-size: 7.5vw;
     }
-  }
-  .word {
-    display: inline-block;
-    overflow: hidden;
-    perspective: 1000px;
-    perspective-origin: -150% 50%;
-  }
-  .clone {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    display: inline-block;
-    overflow: hidden;
-    perspective: 1000px;
-    perspective-origin: -150% 50%;
+    .word {
+      display: inline-block;
+      overflow: hidden;
+      perspective: 1000px;
+      perspective-origin: -150% 50%;
+    }
+    .clone {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      display: inline-block;
+      overflow: hidden;
+      perspective: 1000px;
+      perspective-origin: -150% 50%;
+    }
   }
 `;
 
-const MenuItems = ({
+function MenuItems({
   name,
   bgcolor,
   src,
@@ -51,19 +51,23 @@ const MenuItems = ({
   outerRef,
   backgroundRef,
   projectsRef,
-}) => {
-  useLayoutEffect(() => {
-    document.body.style.overflow = "hidden";
+}) {
+  const wordRef = useRef();
+  const wordRefClone = useRef();
 
+  // useLayoutEffect instead of useEffect to avoid flash if components are mounted before CSS
+  useLayoutEffect(() => {
+    // overflow: hidden to avoid scroll bar when menu is open
+    document.body.style.overflow = "hidden";
     const getAllProjectsItems = gsap.utils.toArray(".project__item");
     gsap.set(getAllProjectsItems, { opacity: 0, y: 200 });
-
     gsap.to(getAllProjectsItems, {
       opacity: 1,
       stagger: 0.1,
       y: 0,
     });
 
+    // overflow: visible when menu component is unmounted
     return () => {
       document.body.style.overflow = "visible";
     };
@@ -76,7 +80,7 @@ const MenuItems = ({
     const getSiblings = getAllProjectsItems.filter(
       (item) => item !== event.target
     );
-    // create hte timeline
+    // create the timeline
     const tlEnter = gsap.timeline({
       defaults: {
         duration: 1,
@@ -109,11 +113,42 @@ const MenuItems = ({
         },
         0
       )
-      .to(getSiblings, { autoAlpha: 0.2 }, 0);
+      .to(
+        getSiblings,
+        {
+          autoAlpha: 0.2,
+        },
+        0
+      )
+      .to(
+        wordRef.current.children,
+        {
+          y: "100%",
+          rotationX: -90,
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2",
+          stagger: 0.025,
+        },
+        0
+      )
+      .to(
+        wordRefClone.current.children,
+        {
+          startAt: { y: "-100%", rotationX: 90, opacity: 0 },
+          y: "0%",
+          rotationX: 0,
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2",
+          stagger: 0.025,
+        },
+        0
+      );
   };
 
   const handleMouseLeave = () => {
-    const getAllProjectsItem = gsap.utils.toArray(".project__item");
+    const getAllProjectsItems = gsap.utils.toArray(".project__item");
     const tlLeave = gsap.timeline({
       defaults: {
         duration: 1,
@@ -124,7 +159,39 @@ const MenuItems = ({
       .to(outerRef.current, {
         autoAlpha: 0,
       })
-      .to(getAllProjectsItem, { autoAlpha: 1 }, 0);
+      .to(
+        getAllProjectsItems,
+        {
+          autoAlpha: 1,
+        },
+        0
+      )
+      .to(
+        wordRef.current.children,
+        {
+          startAt: { y: "100%", rotationX: -90, opacity: 0 },
+
+          y: "0%",
+          rotationX: 0,
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2",
+          stagger: 0.025,
+        },
+        0
+      )
+      .to(
+        wordRefClone.current.children,
+        {
+          y: "-100%",
+          rotationX: 90,
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2",
+          stagger: 0.025,
+        },
+        0
+      );
   };
 
   const handleMouseMove = ({ clientX, clientY }) => {
@@ -150,9 +217,36 @@ const MenuItems = ({
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
     >
-      <span className="project__item-text">{name}</span>
+      <span className="project__item-text">
+        <span className="word" ref={wordRef}>
+          {name.split("").map((item, i) => {
+            return (
+              <span
+                key={i}
+                className="char"
+                style={{ display: "inline-block", willChange: "transform" }}
+              >
+                {item}
+              </span>
+            );
+          })}
+        </span>
+        <span className="word clone" ref={wordRefClone}>
+          {name.split("").map((item, i) => {
+            return (
+              <span
+                key={i}
+                className="char"
+                style={{ display: "inline-block", willChange: "transform" }}
+              >
+                {item}
+              </span>
+            );
+          })}
+        </span>
+      </span>
     </StyledProjectItem>
   );
-};
+}
 
 export default MenuItems;
