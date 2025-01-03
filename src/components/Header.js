@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
-
 import { gsap } from "gsap";
 
 const StyledHeader = styled.header`
