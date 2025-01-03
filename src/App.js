@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import styled from "styled-components";
 import Menu from "./components/Menu";
 import Content from "./components/Content";
+import Project from "./components/Project";
 
 const StyledMainWrapper = styled.div`
   position: relative;
@@ -15,6 +16,7 @@ function App() {
     <StyledMainWrapper>
       <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       <Content />
+      <Project />
       <Menu isMenuOpen={isMenuOpen} />
     </StyledMainWrapper>
   );

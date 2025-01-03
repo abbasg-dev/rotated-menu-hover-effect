@@ -1,5 +1,5 @@
 import React from "react";
-import projects from "./project";
+import projects from "./projects";
 import MenuItems from "./MenuItems";
 import styled from "styled-components";
 
