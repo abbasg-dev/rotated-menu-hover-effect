@@ -43,7 +43,14 @@ const StyledProjectItem = styled.a`
   }
 `;
 
-const MenuItems = ({ name, bgcolor, src }) => {
+const MenuItems = ({
+  name,
+  bgcolor,
+  src,
+  innerRef,
+  outerRef,
+  backgroundRef,
+}) => {
   useLayoutEffect(() => {
     document.body.style.overflow = "hidden";
 
@@ -61,12 +68,56 @@ const MenuItems = ({ name, bgcolor, src }) => {
     };
   }, []);
 
+  const handleMouseEnter = (event) => {
+    // destructure image and color from the dataset
+    const { image, color } = event.target.dataset;
+    const getAllProjectsItems = gsap.utils.toArray(".project__item");
+    const getSiblings = getAllProjectsItems.filter(
+      (item) => item !== event.target
+    );
+    // create hte timeline
+    const tlEnter = gsap.timeline({
+      defaults: {
+        duration: 1,
+        ease: "none",
+        onStart: () => {
+          gsap.set(innerRef.current, {
+            backgroundImage: `url(${image})`,
+          });
+          gsap.to(backgroundRef.current, {
+            backgroundColor: color,
+            duration: 1,
+            ease: "expo",
+          });
+        },
+      },
+    });
+    tlEnter
+      .to(outerRef.current, {
+        duration: 1.3,
+        ease: "expo",
+        autoAlpha: 1,
+      })
+      .to(
+        innerRef.current,
+        {
+          duration: 1.3,
+          ease: "expo",
+          startAt: { scale: 1.2 },
+          scale: 1,
+        },
+        0
+      )
+      .to(getSiblings, { autoAlpha: 0.2 }, 0);
+  };
+
   return (
     <StyledProjectItem
       href=""
       className="project__item"
       data-color={bgcolor}
       data-image={src}
+      onMouseEnter={handleMouseEnter}
     >
       <span className="project__item-text">{name}</span>
     </StyledProjectItem>
